@@ -253,6 +253,9 @@ class LicenseManager {
     }
 
     func computeState() -> LicenseState {
+        #if !DEBUG
+        return .pro // Personal fork: Release always runs as Pro; Debug keeps upstream's logic and tests.
+        #else
         #if DEBUG
         if hasMockedLicense { return mockedTrialStartDate.map(trialState) ?? state }
         #endif
@@ -269,6 +272,7 @@ class LicenseManager {
             return .pro
         }
         return computeTrialState()
+        #endif
     }
 
     private func computeTrialState() -> LicenseState {

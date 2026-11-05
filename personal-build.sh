@@ -5,6 +5,18 @@ cd "$(dirname "$0")"
 
 app=DerivedData/Build/Products/Debug/AltTab.app
 fail() { echo "FAIL: $*" >&2; exit 1; }
+# At most one AltTab may run, and only from /Applications: a copy from another path is a second app to
+# LaunchServices, so both run and draw two switchers. Sets $running to its pid, or empty.
+check_running() {
+  running=$(pgrep -x AltTab || true)
+  if [[ $(wc -w <<<"$running") -gt 1 ]]; then
+    for p in $running; do ps -o pid=,comm= -p "$p"; done
+    fail "more than one AltTab is running; quit them all with: pkill -x AltTab"
+  fi
+  if [[ -n $running && $(ps -o comm= -p "$running") != /Applications/AltTab.app/Contents/MacOS/AltTab ]]; then
+    fail "AltTab is running from $(ps -o comm= -p "$running"), not /Applications; quit it with: pkill -x AltTab"
+  fi
+}
 
 # a. Preflight
 [[ $(uname) == Darwin ]] || fail "not macOS"
@@ -20,6 +32,7 @@ git remote get-url upstream >/dev/null 2>&1 || git remote add upstream https://g
 [[ $(git branch --show-current) == personal ]] || fail "not on branch personal"
 # macOS privacy blocks xctest from reading ~/Documents, so the tests fail there with "Failed to create a bundle instance".
 [[ $PWD != "$HOME"/Documents/* ]] || fail "repo is under ~/Documents; move it (e.g. to ~/Developer)"
+check_running
 echo "OK preflight"
 
 # b. Sync with Upstream
@@ -56,11 +69,13 @@ sig=$(codesign -dv --verbose=2 "$app" 2>&1)
 grep -qx 'Authority=Local Self-Signed' <<<"$sig" || fail "signature authority is not Local Self-Signed"
 echo "OK signed: Authority=Local Self-Signed"
 
-# f. Quit the running AltTab (osascript only when running: it would otherwise launch the app)
-if pgrep -x AltTab >/dev/null; then
+# f. Quit the running AltTab. check_running proves it is the only copy and the /Applications one, so the
+# bundle-id quit (graceful: saves state) reaches it. osascript only when running: it would otherwise launch it.
+check_running
+if [[ -n $running ]]; then
   osascript -e 'tell application id "com.lwouis.alt-tab-macos" to quit'
-  for _ in {1..10}; do pgrep -x AltTab >/dev/null || break; sleep 1; done
-  if pgrep -x AltTab >/dev/null; then fail "AltTab still running after 10 seconds"; fi
+  for _ in {1..10}; do kill -0 "$running" 2>/dev/null || break; sleep 1; done
+  if kill -0 "$running" 2>/dev/null; then fail "AltTab (pid $running) still running after 10 seconds"; fi
 fi
 echo "OK AltTab not running"
 
@@ -86,8 +101,9 @@ echo "OK installed /Applications/AltTab.app"
 # i. Launch
 open /Applications/AltTab.app
 sleep 5
-pgrep -x AltTab >/dev/null || fail "AltTab is not running after launch"
-echo "OK AltTab running"
+check_running
+[[ -n $running ]] || fail "AltTab is not running after launch"
+echo "OK AltTab running (one copy, pid $running)"
 
 # Tag the good build: git is the real rollback (check out the tag and rebuild).
 git tag "personal-$stamp"

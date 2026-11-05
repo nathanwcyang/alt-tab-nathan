@@ -41,9 +41,11 @@ echo "OK tests passed"
 
 # d. Build
 # shortcut: mirrors ai/build.sh plus CURRENT_PROJECT_VERSION (it takes no arguments), re-diff it on each sync.
+# `clean`: incremental builds alternate between re-embedding Sparkle unsigned and re-signing it, because the
+# "Copy Sparkle Helpers" phase doesn't list the embedded framework as an input. A clean build always runs both.
 python3 scripts/assets/compile_illustrations.py --check || fail "asset check failed"
 xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug -configuration Debug -derivedDataPath DerivedData \
-  CURRENT_PROJECT_VERSION="$ver" || fail "build failed"
+  CURRENT_PROJECT_VERSION="$ver" clean build || fail "build failed"
 built=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.plist")
 [[ $built == "$ver" ]] || fail "built app has version '$built', expected '$ver'"
 echo "OK built $app (version $built)"

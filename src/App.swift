@@ -684,13 +684,8 @@ extension App: NSApplicationDelegate {
             NotificationCenter.default.post(name: ProTransitionManager.proLockStateDidChangeNotification, object: nil)
         }
         #if DEBUG
-        // The QA launch never initializes persisted licensing: its in-memory state must neither read nor
-        // alter the real license, and it must not schedule a revalidation that can later replace the mock.
-        if CommandLine.arguments.contains("--mock-pro") {
-            LicenseManager.shared.mockProUser()
-        } else {
-            LicenseManager.shared.initialize()
-        }
+        // Personal fork: always run as Pro. mockProUser() never reads or alters the real license and never contacts the license server.
+        LicenseManager.shared.mockProUser()
         #else
         LicenseManager.shared.initialize()
         #endif

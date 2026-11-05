@@ -4,7 +4,8 @@ enum Endpoints {
     static let domain = Bundle.main.object(forInfoDictionaryKey: "Domain") as! String
     static let apiDomain = Bundle.main.object(forInfoDictionaryKey: "ApiDomain") as! String
     static let website = "https://\(domain)"
-    static let appcastUrl = "\(website)/appcast.xml"
+    // Personal fork: unresolvable on purpose (.invalid never resolves), so the stock updater can never replace this build.
+    static let appcastUrl = "https://updates.invalid/appcast.xml"
     static let supportUrl = "\(website)/support"
     static let accountUrl = "\(website)/my-account"
     static let licenseApiBaseUrl = "https://\(apiDomain)/v1/license"

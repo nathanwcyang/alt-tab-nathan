@@ -1,6 +1,6 @@
 # AltTab Personal Fork
 
-A personal fork of AltTab for macOS, built and used only on its owner's own Mac, with all Pro features available.
+A personal fork of AltTab for macOS, built and used only on its owner's own Mac, with all Pro features available. How to update, check and recover it: [PERSONAL.md](PERSONAL.md).
 
 ## Language
 
@@ -25,7 +25,7 @@ The local check that decides whether Pro features may run.
 _Avoid_: Paywall, lock
 
 **Patch**:
-The one local commit on top of Upstream that makes the Gate always allow Pro features and keeps the app away from Upstream's update feed.
+The small source changes on top of Upstream that make the Gate always allow Pro features, keep the app away from Upstream's update feed, and skip the Debug-only QA panel.
 _Avoid_: Crack, hack, mod
 
 **Personal build**:

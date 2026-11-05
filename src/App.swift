@@ -595,14 +595,7 @@ class App: AppCenterApplication {
             pendingShowSettingsWindow = false
             showSettingsWindow()
         }
-        #if DEBUG
-        if !QAMenu.suppressed {
-            QAMenu.shared = QAMenu()
-            QAMenu.shared?.orderFront(nil)
-            if QAMenu.openSettingsOnLaunch { App.showSettingsWindow() }
-            if QAMenu.graphEnabled { DebugMenu.setEnabled(true) }
-        }
-        #endif
+        // Personal fork: no QA menu. Its buttons can replace the Pro mock or wipe the real preferences.
         SearchDiscoveryHint.shared.initialize()
         UsageStats.prune()
         // Created now rather than on the first prompt: its observers cancel prompts queued before that.

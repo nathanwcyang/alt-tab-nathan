@@ -64,17 +64,23 @@ if pgrep -x AltTab >/dev/null; then
 fi
 echo "OK AltTab not running"
 
-# g. Back up the installed app (a move, never a delete)
+# g. Back up the installed app as a zip: launchers and LaunchServices don't see an app inside a zip.
+# Only the newest backup is kept; older ones and the replaced app go to the Trash, never rm.
+stamp=$(date +%Y%m%d-%H%M%S)
 backup=none
 if [[ -e /Applications/AltTab.app ]]; then
   mkdir -p ~/AltTab-backups
-  backup=~/AltTab-backups/AltTab-$(date +%Y%m%d-%H%M%S).app
-  mv /Applications/AltTab.app "$backup"
+  backup=~/AltTab-backups/AltTab-$stamp.zip
+  ditto -c -k --keepParent /Applications/AltTab.app "$backup"
+  unzip -tq "$backup" >/dev/null || fail "backup zip is unreadable: $backup"
+  for old in ~/AltTab-backups/*; do [[ $old == "$backup" ]] || mv "$old" ~/.Trash/; done
+  mv /Applications/AltTab.app ~/.Trash/AltTab-replaced-$stamp.app
 fi
 echo "OK backup: $backup"
 
-# h. Install
+# h. Install, and unregister the build copy so only /Applications/AltTab.app is launchable
 ditto "$app" /Applications/AltTab.app
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -u "$PWD/$app"
 echo "OK installed /Applications/AltTab.app"
 
 # i. Launch
@@ -83,5 +89,9 @@ sleep 5
 pgrep -x AltTab >/dev/null || fail "AltTab is not running after launch"
 echo "OK AltTab running"
 
+# Tag the good build: git is the real rollback (check out the tag and rebuild).
+git tag "personal-$stamp"
+echo "OK tagged personal-$stamp"
+
 # j. Next steps
-echo "Next: grant Accessibility and Screen Recording to AltTab in System Settings > Privacy & Security. Then open AltTab Settings, confirm Pro is on, and test search by typing in the switcher. Previous app backup: $backup."
+echo "Next: grant Accessibility and Screen Recording to AltTab in System Settings > Privacy & Security. Then open AltTab Settings, confirm Pro is on, and test search by typing in the switcher. Previous app backup: $backup (unzip it into /Applications to roll back)."

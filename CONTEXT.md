@@ -29,7 +29,7 @@ The one local commit on top of Upstream that makes the Gate always allow Pro fea
 _Avoid_: Crack, hack, mod
 
 **Personal build**:
-A Debug build of the Fork, signed with the owner's "Local Self-Signed" certificate and installed on the owner's own Mac only. Its version is the latest Upstream tag, so it matches the stored preferences.
+A Release build of the Fork, signed with the owner's "Local Self-Signed" certificate and installed on the owner's own Mac only. Its version is the latest Upstream tag, so it matches the stored preferences.
 _Avoid_: Release, distribution
 
 **Sync**:

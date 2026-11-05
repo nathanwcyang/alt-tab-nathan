@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-app=DerivedData/Build/Products/Debug/AltTab.app
+app=DerivedData/Build/Products/Release/AltTab.app
 fail() { echo "FAIL: $*" >&2; exit 1; }
 # At most one AltTab may run, and only from /Applications: a copy from another path is a second app to
 # LaunchServices, so both run and draw two switchers. Sets $running to its pid, or empty.
@@ -44,21 +44,34 @@ if ! git merge --no-edit upstream/master; then
 fi
 echo "OK merged upstream/master"
 # The app crashes without a version, and PreferencesMigrations compares it with the stored preferencesVersion.
-ver=$(git describe --tags --abbrev=0 HEAD | sed 's/^v//')
+ver=$(git describe --tags --abbrev=0 --match 'v[0-9]*' HEAD | sed 's/^v//') # skip our personal-* rollback tags
 [[ $ver =~ ^[0-9]+(\.[0-9]+)+$ ]] || fail "bad version from the latest tag: '$ver'"
 echo "OK version $ver"
+# A merge can move or drop the Release-only Pro switch without a conflict; never ship a build without it.
+grep -q "Personal fork: Release always runs as Pro" src/pro/license/LicenseManager.swift \
+  || fail "the Release Pro switch is missing from LicenseManager.computeState(); re-apply it"
+echo "OK Pro switch present"
 
 # c. Tests
 ai/test.sh || fail "ai/test.sh failed"
 echo "OK tests passed"
 
-# d. Build
-# shortcut: mirrors ai/build.sh plus CURRENT_PROJECT_VERSION (it takes no arguments), re-diff it on each sync.
+# d. Build (Release: -Osize, ThinLTO, stripped, no #if DEBUG code)
+# config/local.xcconfig is upstream's gitignored per-developer override, included last by release.xcconfig and
+# only by the app's own targets. Command-line signing settings would also hit the Swift packages, which then
+# demand an Apple development team. Rewritten each run so the version follows the latest tag.
+cat > config/local.xcconfig <<EOF
+// Written by personal-build.sh on every run; edits are overwritten.
+CODE_SIGN_IDENTITY = Local Self-Signed
+OTHER_CODE_SIGN_FLAGS = --timestamp=none --deep --options runtime
+CURRENT_PROJECT_VERSION = $ver
+EOF
+# shortcut: mirrors ai/build.sh's asset check and xcodebuild call (it takes no arguments), re-diff it on each sync.
 # `clean`: incremental builds alternate between re-embedding Sparkle unsigned and re-signing it, because the
 # "Copy Sparkle Helpers" phase doesn't list the embedded framework as an input. A clean build always runs both.
 python3 scripts/assets/compile_illustrations.py --check || fail "asset check failed"
-xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug -configuration Debug -derivedDataPath DerivedData \
-  CURRENT_PROJECT_VERSION="$ver" clean build || fail "build failed"
+xcodebuild -project alt-tab-macos.xcodeproj -scheme Release -configuration Release -derivedDataPath DerivedData \
+  clean build || fail "build failed"
 built=$(/usr/libexec/PlistBuddy -c 'Print CFBundleVersion' "$app/Contents/Info.plist")
 [[ $built == "$ver" ]] || fail "built app has version '$built', expected '$ver'"
 echo "OK built $app (version $built)"
@@ -89,6 +102,7 @@ if [[ -e /Applications/AltTab.app ]]; then
   ditto -c -k --keepParent /Applications/AltTab.app "$backup"
   unzip -tq "$backup" >/dev/null || fail "backup zip is unreadable: $backup"
   for old in ~/AltTab-backups/*; do [[ $old == "$backup" ]] || mv "$old" ~/.Trash/; done
+  # LaunchServices keeps tracking the trashed copy (unregistering and renaming don't stick); emptying the Trash ends it.
   mv /Applications/AltTab.app ~/.Trash/AltTab-replaced-$stamp.app
 fi
 echo "OK backup: $backup"

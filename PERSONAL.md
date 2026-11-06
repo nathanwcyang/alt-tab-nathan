@@ -13,7 +13,7 @@ About 85 seconds. It stops at the first problem and prints `FAIL: <reason>`. In 
 1. Checks the Mac: Xcode 26, the "Local Self-Signed" certificate, a clean `personal` branch, the repo outside `~/Documents`, and at most one AltTab running (from `/Applications`).
 2. Merges `upstream/master`. On a conflict it lists the files, aborts the merge, and stops.
 3. Reads the version from the latest upstream `v*` tag and checks that the Pro switch is still in `LicenseManager.computeState()`.
-4. Runs the 1587 unit tests (`ai/test.sh`, Debug).
+4. Runs the unit tests (`ai/test.sh`, Debug).
 5. Writes `config/local.xcconfig` (gitignored) and does a clean Release build.
 6. Checks the built version and the signature (`Authority=Local Self-Signed`).
 7. Quits AltTab, zips the installed app to `~/AltTab-backups/` (only the newest zip is kept), and moves the old app to the Trash.
@@ -31,7 +31,7 @@ After it finishes, empty the Trash. LaunchServices keeps every trashed AltTab re
 | The Debug-only QA test panel is not created | `src/App.swift` |
 | Build, install and backup script | `personal-build.sh` |
 
-Not changed on purpose: no features or fallbacks were removed, so Syncs merge without conflicts. The update policy is "manual" in Settings, and crash reporting has no app secret, so nothing calls the network automatically.
+Not changed on purpose: no features or fallbacks were removed, so merge conflicts are rare (only the patches above can conflict). Set the update policy to "manual" in AltTab Settings; the app's default is "check automatically", which only reaches the dead update address. Crash reporting has no app secret, so with "manual" nothing calls the network automatically.
 
 ## Troubleshooting
 
@@ -40,14 +40,28 @@ Not changed on purpose: no features or fallbacks were removed, so Syncs merge wi
 | Visual glitches, two switchers | `for p in $(pgrep -x AltTab); do ps -o pid=,comm= -p $p; done` | 2+ lines, or a path outside `/Applications`: `pkill -x AltTab`, then open AltTab from Alfred |
 | `FAIL: merge conflict` | the listed files | Resolve on `personal` by hand, commit, rerun |
 | `FAIL: the Release Pro switch is missing` | `git log -p upstream/master -- src/pro/license/LicenseManager.swift` | Re-add the `#if !DEBUG return .pro #else … #endif` wrapper around `computeState()`'s body |
-| `FAIL: ai/test.sh failed` with "Failed to create a bundle instance" | repo location | Keep the repo outside `~/Documents` (macOS blocks xctest there) |
+| `FAIL: repo is under ~/Documents; move it` | repo location | Move the repo out of `~/Documents` (macOS blocks the test runner there), e.g. to `~/Developer` |
 | `FAIL: codesign --verify failed` | `codesign --verify --deep --strict --verbose=4 DerivedData/Build/Products/Release/AltTab.app` | Rerun; the build is clean each time, so a repeat failure is a real signing problem |
 | Switcher doesn't work after an install | System Settings > Privacy & Security | Grant Accessibility and Screen Recording to AltTab again |
 
 ## Roll back
 
-- Last installed app: unzip the newest file in `~/AltTab-backups/` into `/Applications` (quit AltTab first).
-- Known-good source: the `stable-<version>` tags (pushed to GitHub) and the local `personal-<date>-<time>` tags mark builds that passed every check. The script only builds the `personal` branch, so to go back, revert the bad commits on `personal` (`git revert <commit>`) and rerun the Sync; compare with `git diff stable-<version> personal`.
+### Last installed app (about 1 minute)
+
+Never unzip on top of the current app: the files merge and the signature breaks. Never double-click the zip: it creates a second `AltTab.app` in the backups folder.
+
+1. `pkill -x AltTab`
+2. `mv /Applications/AltTab.app ~/.Trash/AltTab-broken-$(date +%Y%m%d-%H%M%S).app`
+3. `ditto -x -k ~/AltTab-backups/AltTab-*.zip /Applications` (the script keeps exactly one zip)
+4. `open /Applications/AltTab.app`
+
+### Known-good source
+
+The `stable-<version>` tags (pushed to GitHub) and the local `personal-<date>-<time>` tags mark builds that passed every check. Compare with `git diff stable-<version> personal`. The script only builds the `personal` branch, so go back by reverting on `personal`:
+
+1. A bad upstream merge: `git revert -m 1 <merge-commit>` (plain `git revert` refuses merge commits), then rerun the Sync.
+2. Once upstream has fixed the problem, undo that revert first: `git revert <the-revert-commit>`. Otherwise the reverted upstream changes stay out for good, and a Sync that touches the same files stops on a merge conflict.
+3. A bad commit of your own: `git revert <commit>`, then rerun the Sync.
 
 ## Rules
 

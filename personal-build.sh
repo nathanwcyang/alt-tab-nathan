@@ -124,4 +124,4 @@ git tag "personal-$stamp"
 echo "OK tagged personal-$stamp"
 
 # j. Next steps
-echo "Next: grant Accessibility and Screen Recording to AltTab in System Settings > Privacy & Security. Then open AltTab Settings, confirm Pro is on, and test search by typing in the switcher. Previous app backup: $backup (unzip it into /Applications to roll back)."
+echo "Next: grant Accessibility and Screen Recording to AltTab in System Settings > Privacy & Security. Then open AltTab Settings, confirm Pro is on, and test search by typing in the switcher. Previous app backup: $backup (to roll back, follow \"Roll back\" in PERSONAL.md; never unzip over the installed app)."

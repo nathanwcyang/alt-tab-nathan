@@ -30,7 +30,7 @@ After it finishes, empty the Trash. LaunchServices keeps every trashed AltTab re
 | Update feed points at `https://updates.invalid/appcast.xml`, so the stock updater can never replace this build | `src/api/Endpoints.swift` |
 | The Debug-only QA test panel is not created | `src/App.swift` |
 | Titles style uses Clear glass with no panel shadow, like App Icons | `src/switcher/main-window/TilesPanelBackgroundView.swift`, `src/switcher/Appearance.swift` |
-| Clear glass gets a theme-following Tint (black 0.5 in dark mode); titles are fully opaque; in dark mode the selection is solid Sky 11 (#00749E) with no border | `src/switcher/Appearance.swift`, `src/switcher/main-window/TilesPanelBackgroundView.swift` |
+| Clear glass gets a theme-following Tint (black 0.5 in dark mode); titles are fully opaque; in dark mode the selection is Sky 11 (#00749E) at 90% with no border | `src/switcher/Appearance.swift`, `src/switcher/main-window/TilesPanelBackgroundView.swift` |
 | Switcher titles and search field use Geist Sans, which must be installed in `~/Library/Fonts` (falls back to the system font) | `src/switcher/Appearance.swift`, `src/switcher/main-window/TilesView.swift` |
 | Build, install and backup script | `personal-build.sh` |
 

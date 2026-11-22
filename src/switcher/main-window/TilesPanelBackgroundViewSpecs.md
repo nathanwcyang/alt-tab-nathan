@@ -25,8 +25,8 @@ varies with style or size has to be re-applied there rather than at construction
 - **Clear glass is tinted and titles stay readable** — with Titles or App Icons on macOS 26+, open
   the switcher over a pure white page and over a busy photo, in light and dark appearances. The panel
   carries a wash (white 0.2 in light, black 0.5 in dark) drawn by the content host, the titles are fully
-  opaque, and the glass is still visibly see-through. In dark mode the selected row is solid Sky 11
-  (`#00749E`) with no border and the hovered row is the same at 35%; light mode keeps the accent fill
+  opaque, and the glass is still visibly see-through. In dark mode the selected row is Sky 11 at 90%
+  (`#00749E`) with no border, and the hovered row is the same at 35%; light mode keeps the accent fill
   and border. Thumbnails (regular glass) shows no wash.
 - **Tint follows a live appearance switch** — switch the system appearance while AltTab runs, then
   summon the switcher: the wash and selection highlight match the new appearance without a restart.

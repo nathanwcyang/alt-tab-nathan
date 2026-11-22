@@ -31,11 +31,12 @@ class Appearance {
 
     // theme: constants
     static var enablePanelShadow = true
-    static var highlightFocusedBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor : NSColor.systemAccentColor.withAlphaComponent(0.2) } }
+    static var highlightFocusedBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor.withAlphaComponent(0.9) : NSColor.systemAccentColor.withAlphaComponent(0.2) } }
     static var highlightHoveredBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor.withAlphaComponent(0.35) : NSColor.systemAccentColor.withAlphaComponent(0.1) } }
     static var highlightFocusedBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor } }
     static var highlightHoveredBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor.withAlphaComponent(0.7) } }
-    /// Personal fork, dark theme only: Radix light-scale Sky 11, about 5.3:1 against white titles.
+    /// Personal fork, dark theme only: Radix light-scale Sky 11, about 5.3:1 against white titles. The selection
+    /// uses it at 90%, which keeps about 4.7:1 over a white page; below ~88% small titles drop under 4.5:1.
     private static let solidHighlightColor = NSColor(srgbRed: 0, green: 0x74 / 255.0, blue: 0x9E / 255.0, alpha: 1)
     private static var usesSolidHighlight = false
     static var searchMatchHighlightColor: NSColor { get { NSColor.systemYellow.withAlphaComponent(0.5) } }

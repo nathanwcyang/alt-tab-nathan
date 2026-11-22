@@ -418,9 +418,7 @@ class TileView: FlippedView {
         paragraphStyle.alignment = label.alignment
         paragraphStyle.baseWritingDirection = .leftToRight
         paragraphStyle.lineBreakMode = forceClipping ? .byClipping : label.lineBreakMode
-        var attributes: [NSAttributedString.Key: Any] = [.foregroundColor: Appearance.fontColor, .font: Appearance.font, .paragraphStyle: paragraphStyle]
-        attributes[.shadow] = Appearance.titleShadow
-        return attributes
+        return [.foregroundColor: Appearance.fontColor, .font: Appearance.font, .paragraphStyle: paragraphStyle]
     }
 
     /// The title the tile draws is built from the app name, the window title, or both joined by " - ",

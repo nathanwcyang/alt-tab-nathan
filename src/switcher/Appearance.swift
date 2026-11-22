@@ -24,7 +24,6 @@ class Appearance {
 
     // theme
     static var fontColor = NSColor.red
-    static var titleShadow: NSShadow?
     static var clearGlassTintColor = NSColor.red
     static var imagesShadowColor = NSColor.red // for icon, thumbnail and windowless images
     static var material = LegacyMaterial.ultraDark
@@ -32,10 +31,13 @@ class Appearance {
 
     // theme: constants
     static var enablePanelShadow = true
-    static var highlightFocusedBackgroundColor: NSColor { get { NSColor.systemAccentColor.withAlphaComponent(0.2) } }
-    static var highlightHoveredBackgroundColor: NSColor { get { NSColor.systemAccentColor.withAlphaComponent(0.1) } }
-    static var highlightFocusedBorderColor: NSColor { get { NSColor.systemAccentColor } }
-    static var highlightHoveredBorderColor: NSColor { get { NSColor.systemAccentColor.withAlphaComponent(0.7) } }
+    static var highlightFocusedBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor : NSColor.systemAccentColor.withAlphaComponent(0.2) } }
+    static var highlightHoveredBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor.withAlphaComponent(0.35) : NSColor.systemAccentColor.withAlphaComponent(0.1) } }
+    static var highlightFocusedBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor } }
+    static var highlightHoveredBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor.withAlphaComponent(0.7) } }
+    /// Personal fork, dark theme only: Radix light-scale Sky 11, about 5.3:1 against white titles.
+    private static let solidHighlightColor = NSColor(srgbRed: 0, green: 0x74 / 255.0, blue: 0x9E / 255.0, alpha: 1)
+    private static var usesSolidHighlight = false
     static var searchMatchHighlightColor: NSColor { get { NSColor.systemYellow.withAlphaComponent(0.5) } }
     static var searchMatchForegroundColor: NSColor { get { NSColor(calibratedWhite: 0.12, alpha: 1) } }
 
@@ -90,8 +92,6 @@ class Appearance {
         } else {
             enablePanelShadow = true
         }
-        // the title halo is only for Clear glass, which is exactly when the panel shadow is off
-        if enablePanelShadow { titleShadow = nil }
     }
 
     private static func thumbnailsSize(_ isHorizontalScreen: Bool, _ size: AppearanceSizePreference) {
@@ -199,30 +199,20 @@ class Appearance {
 
     private static func lightTheme() {
         fontColor = .black
-        titleShadow = makeTitleShadow(.white)
-        // starting value, to judge by eye over a white page and a busy photo; above ~0.5 the glass stops reading as glass
+        // untested starting value; the owner doesn't use light mode
         clearGlassTintColor = .white.withAlphaComponent(0.2)
+        usesSolidHighlight = false
         imagesShadowColor = .gray.withAlphaComponent(0.8)
         material = LegacyMaterial.mediumLight
     }
 
     private static func darkTheme() {
         fontColor = .white
-        titleShadow = makeTitleShadow(.black)
-        // starting value, to judge by eye over a white page and a busy photo; above ~0.5 the glass stops reading as glass
-        clearGlassTintColor = .black.withAlphaComponent(0.2)
+        // picked by eye from 0.2/0.35/0.5/0.65 over a dark backdrop (branch prototype/tint-highlight)
+        clearGlassTintColor = .black.withAlphaComponent(0.5)
+        usesSolidHighlight = true
         imagesShadowColor = .gray.withAlphaComponent(0.8)
         material = LegacyMaterial.dark
-    }
-
-    /// A soft halo in the color opposite to the title, so titles stay legible over busy windows behind Clear glass.
-    private static func makeTitleShadow(_ color: NSColor) -> NSShadow {
-        let shadow = NSShadow()
-        // starting values, to judge by eye over a white page and a busy photo
-        shadow.shadowColor = color.withAlphaComponent(0.5)
-        shadow.shadowBlurRadius = 2
-        shadow.shadowOffset = .zero
-        return shadow
     }
 }
 

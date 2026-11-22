@@ -22,16 +22,17 @@ Decisions already made (don't reopen): theme-following black/white Tint, not gra
 - [x] Titles are fully opaque in light and dark themes
 - [ ] Clear glass shows a black Tint in dark mode and a white Tint in light mode, and switching appearance while AltTab runs updates it without a restart
 - [x] Regular glass (Thumbnails) and the frosted background are unchanged apart from the opaque titles
-- [x] Titles have a subtle opposite-color shadow; the SF Pro status and badge glyphs are unchanged
+- [x] ~~Titles have a subtle opposite-color shadow~~ (removed by the owner, see Comments); the SF Pro status and badge glyphs are unchanged
 - [ ] The chosen Tint alpha and shadow values each have a one-line comment saying they were tuned by eye over a white page and a busy photo
 - [x] The switcher panel background spec's manual scenarios cover the Tint (white page and busy photo, both themes, live appearance switch, one look with Reduce Transparency on), and `PERSONAL.md`'s "How this differs from upstream" table gains a row
 - [x] The build command from `ai/build.sh` succeeds and `ai/test.sh` passes
 - [x] One commit on `personal` with an end-user changelog-style message that passes the commit hooks, including this ticket file with Status `resolved`, so the working tree is clean for `./personal-build.sh`
-- [ ] After `./personal-build.sh` installs it, the owner checks ⌥Tab in Titles over a white page and a busy window in both themes: titles readable, glass still visible, selection highlight still clearly accent-colored (owner's visual sign-off)
+- [ ] After `./personal-build.sh` installs it, the owner checks ⌥Tab in Titles over a white page and a busy window in both themes: titles readable, glass still visible, selection highlight clearly visible (owner's visual sign-off)
 
 ## Comments
 
 - Red-tint test (macOS 26.7.3): an opaque red `tintColor` on the private Clear glass only lightened it to gray, so the Tint is a dim layer: the glass's content host gets the theme-following background color.
-- Tint (0.2) and halo (0.5 alpha, 2pt blur) are starting values, not yet judged by eye; the owner's check below decides them.
-- The halo is limited to Clear glass (Regular glass and frosted keep no title shadow), per this ticket.
+- Superseded after the owner's check: a prototype (branch `prototype/tint-highlight`) picked a dark-mode Tint of 0.5 over a dark backdrop; light mode stays at 0.2, untested, since the owner doesn't use light mode.
+- The title shadow was removed at the owner's request (c1ad6937).
+- In dark mode the selection highlight became Radix light-scale Sky 11 (#00749E) with no border, at 90% opacity (15e306bf); hover uses it at 35%. Light mode keeps the accent fill and border.
 - Implemented in the same commit as ticket 03, since both change the switcher's theme code.

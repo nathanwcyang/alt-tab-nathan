@@ -25,7 +25,7 @@ The local check that decides whether Pro features may run.
 _Avoid_: Paywall, lock
 
 **Patch**:
-The small source changes on top of Upstream that make the Gate always allow Pro features, keep the app away from Upstream's update feed, and skip the Debug-only QA panel.
+The small source changes on top of Upstream that make the Gate always allow Pro features, keep the app away from Upstream's update feed, skip the Debug-only QA panel, and change the switcher's look (Clear glass for Titles, the Tint, the dark-mode selection highlight, and Geist Sans).
 _Avoid_: Crack, hack, mod
 
 **Personal build**:

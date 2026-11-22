@@ -99,7 +99,6 @@ enum EffectViewKind {
 
 func requiredEffectViewKind() -> EffectViewKind {
     if #available(macOS 26.0, *) {
-        // App Icons and Titles get clear glass
         let style = Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)
         if style == .appIcons || style == .titles,
            LiquidGlass.canUsePrivateLook {

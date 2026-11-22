@@ -1,12 +1,12 @@
 # 03: Geist Sans in the switcher
 
-**What to build:** The switcher's window titles and its search field use Geist Sans instead of the system font. They keep today's weights: Geist Medium where the system font is Medium (Titles and Thumbnails on macOS 26+), Geist SemiBold where it's SemiBold (App Icons), and Geist Regular where it's Regular (before macOS 26). Sizes stay the same. The SF Pro Text symbol glyphs (status icons, badges, tile font icons) stay SF Pro, because they're icon characters that Geist doesn't have.
+**What to build:** The switcher's window titles and its search field use Geist Sans instead of the system font. Weights: Geist Regular for Titles and Thumbnails (the owner switched from Medium after trying it), Geist SemiBold for App Icons, and Geist Regular before macOS 26. Sizes stay the same. The SF Pro Text symbol glyphs (status icons, badges, tile font icons) stay SF Pro, because they're icon characters that Geist doesn't have.
 
-Geist is already installed on the owner's Mac in `~/Library/Fonts` (PostScript names `Geist-Regular`, `Geist-Medium`, `Geist-SemiBold`, from the variable font). Load it by name and fall back to the current system font when it isn't available, so a missing font never crashes or blanks the switcher. Don't bundle font files in the app: that would edit the Xcode project and Info.plist, both Sync conflict hotspots. Always on, with no Settings control. Terms are defined in `CONTEXT.md`.
+Geist is already installed on the owner's Mac in `~/Library/Fonts` (PostScript names `Geist-Regular` and `Geist-SemiBold`, from the variable font). Load it by name and fall back to the current system font when it isn't available, so a missing font never crashes or blanks the switcher. Don't bundle font files in the app: that would edit the Xcode project and Info.plist, both Sync conflict hotspots. Always on, with no Settings control. Terms are defined in `CONTEXT.md`.
 
 Out of scope: the search-discovery hint and panel, the empty-state label, the Settings window, and the menu bar.
 
-Decisions already made (don't reopen): installed font by name with a system fallback, not bundled. Titles and search field only. Same weights and sizes. No Upstream PR.
+Decisions already made (don't reopen): installed font by name with a system fallback, not bundled. Titles and search field only. Same sizes; Regular instead of Medium (owner's change). No Upstream PR.
 
 **Blocked by:** None (can start immediately).
 

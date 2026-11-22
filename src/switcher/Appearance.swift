@@ -28,17 +28,16 @@ class Appearance {
     static var imagesShadowColor = NSColor.red // for icon, thumbnail and windowless images
     static var material = LegacyMaterial.ultraDark
     static var highlightBorderWidth = CGFloat(3)
+    static var highlightFocusedBackgroundColor = NSColor.red
+    static var highlightHoveredBackgroundColor = NSColor.red
+    static var highlightFocusedBorderColor = NSColor.red
+    static var highlightHoveredBorderColor = NSColor.red
+    /// Personal fork, dark theme only: Radix light-scale Sky 11, about 5.3:1 against white titles. The selection
+    /// uses it at 90%, which keeps about 4.7:1 over a white page; below ~88% small titles drop under 4.5:1.
+    private static let skyHighlightColor = NSColor(srgbRed: 0, green: 0x74 / 255.0, blue: 0x9E / 255.0, alpha: 1)
 
     // theme: constants
     static var enablePanelShadow = true
-    static var highlightFocusedBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor.withAlphaComponent(0.9) : NSColor.systemAccentColor.withAlphaComponent(0.2) } }
-    static var highlightHoveredBackgroundColor: NSColor { get { usesSolidHighlight ? solidHighlightColor.withAlphaComponent(0.35) : NSColor.systemAccentColor.withAlphaComponent(0.1) } }
-    static var highlightFocusedBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor } }
-    static var highlightHoveredBorderColor: NSColor { get { usesSolidHighlight ? .clear : NSColor.systemAccentColor.withAlphaComponent(0.7) } }
-    /// Personal fork, dark theme only: Radix light-scale Sky 11, about 5.3:1 against white titles. The selection
-    /// uses it at 90%, which keeps about 4.7:1 over a white page; below ~88% small titles drop under 4.5:1.
-    private static let solidHighlightColor = NSColor(srgbRed: 0, green: 0x74 / 255.0, blue: 0x9E / 255.0, alpha: 1)
-    private static var usesSolidHighlight = false
     static var searchMatchHighlightColor: NSColor { get { NSColor.systemYellow.withAlphaComponent(0.5) } }
     static var searchMatchForegroundColor: NSColor { get { NSColor(calibratedWhite: 0.12, alpha: 1) } }
 
@@ -87,8 +86,8 @@ class Appearance {
         } else {
             lightTheme()
         }
-        // for Liquid Glass (App Icons and Titles), we don't want a shadow around the panel
-        if #available(macOS 26.0, *), (currentStyle == .appIcons || currentStyle == .titles) && LiquidGlass.canUsePrivateLook {
+        // Clear glass gets no shadow around the panel
+        if requiredEffectViewKind() == .liquidGlassClear {
             enablePanelShadow = false
         } else {
             enablePanelShadow = true
@@ -194,24 +193,29 @@ class Appearance {
 
     /// Personal fork: Geist is installed in ~/Library/Fonts, not bundled; the system font stands in when it's missing.
     static func geistFont(ofSize size: CGFloat, weight: NSFont.Weight) -> NSFont {
-        let name = weight == .semibold ? "Geist-SemiBold" : weight == .medium ? "Geist-Medium" : "Geist-Regular"
+        let name = weight == .semibold ? "Geist-SemiBold" : "Geist-Regular"
         return NSFont(name: name, size: size) ?? NSFont.systemFont(ofSize: size, weight: weight)
     }
 
     private static func lightTheme() {
         fontColor = .black
-        // untested starting value; the owner doesn't use light mode
         clearGlassTintColor = .white.withAlphaComponent(0.2)
-        usesSolidHighlight = false
+        highlightFocusedBackgroundColor = NSColor.systemAccentColor.withAlphaComponent(0.2)
+        highlightHoveredBackgroundColor = NSColor.systemAccentColor.withAlphaComponent(0.1)
+        highlightFocusedBorderColor = NSColor.systemAccentColor
+        highlightHoveredBorderColor = NSColor.systemAccentColor.withAlphaComponent(0.7)
         imagesShadowColor = .gray.withAlphaComponent(0.8)
         material = LegacyMaterial.mediumLight
     }
 
     private static func darkTheme() {
         fontColor = .white
-        // picked by eye from 0.2/0.35/0.5/0.65 over a dark backdrop (branch prototype/tint-highlight)
+        // Clear glass lightens what's drawn inside it, so this renders weaker than its alpha suggests
         clearGlassTintColor = .black.withAlphaComponent(0.5)
-        usesSolidHighlight = true
+        highlightFocusedBackgroundColor = skyHighlightColor.withAlphaComponent(0.9)
+        highlightHoveredBackgroundColor = skyHighlightColor.withAlphaComponent(0.35)
+        highlightFocusedBorderColor = .clear
+        highlightHoveredBorderColor = .clear
         imagesShadowColor = .gray.withAlphaComponent(0.8)
         material = LegacyMaterial.dark
     }

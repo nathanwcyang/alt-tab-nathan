@@ -18,18 +18,18 @@ varies with style or size has to be re-applied there rather than at construction
   (50pt, 55pt, 75pt corners). Inspect all four corners in light and dark appearances, including against
   contrasting backgrounds. Selection, scrolling and search stay usable.
 - **Titles uses clear glass, Thumbnails keeps regular glass** — on macOS 26+, summon Titles and the
-  panel shows the clear-glass look (as App Icons does); switch to Thumbnails and it shows regular glass.
-  With the private clear-glass look unavailable, Titles shows regular glass like App Icons.
+  panel shows Clear glass (as App Icons does); switch to Thumbnails and it shows regular glass.
+  When the clear variant isn't available, Titles shows regular glass like App Icons.
 - **No panel shadow under clear glass** — Titles and App Icons show no shadow around the panel;
   Thumbnails keeps its shadow. Switch between the styles and confirm the shadow follows the style.
 - **Clear glass is tinted and titles stay readable** — with Titles or App Icons on macOS 26+, open
   the switcher over a pure white page and over a busy photo, in light and dark appearances. The panel
-  carries a wash (white 0.2 in light, black 0.5 in dark) drawn by the content host, the titles are fully
-  opaque, and the glass is still visibly see-through. In dark mode the selected row is Sky 11 at 90%
-  (`#00749E`) with no border, and the hovered row is the same at 35%; light mode keeps the accent fill
-  and border. Thumbnails (regular glass) shows no wash.
+  carries the Tint (white in light, black in dark) drawn by the content host, the titles are fully
+  opaque, and the glass is still visibly see-through. In dark mode the selected and hovered rows use the
+  Sky highlight with no border, the hovered one clearly lighter; light mode keeps the accent fill and
+  border. Thumbnails (regular glass) shows no Tint.
 - **Tint follows a live appearance switch** — switch the system appearance while AltTab runs, then
-  summon the switcher: the wash and selection highlight match the new appearance without a restart.
+  summon the switcher: the Tint and selection highlight match the new appearance without a restart.
 - **Tint with Reduce Transparency** — turn on Reduce Transparency and summon Titles once; the panel
   and titles still look intentional (no doubled-up dark slab).
 - **Recheck on later macOS builds** — this works around a rendering bug rather than identifying it.

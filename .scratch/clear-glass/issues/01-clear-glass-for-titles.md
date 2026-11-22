@@ -10,10 +10,14 @@ Decisions already made (don't reopen): Titles only, not every style. Committed s
 
 **Status:** resolved
 
-- [ ] In the Titles style on macOS 26+, the panel uses Clear glass and has no shadow; with the private look unavailable, it uses Regular glass with a shadow, like App Icons
-- [ ] Thumbnails still uses Regular glass with a shadow; App Icons is unchanged
-- [ ] Comments next to both decisions say App Icons and Titles (not just App Icons), and the switcher panel background spec's summary and manual scenarios cover Titles with Clear glass, including the corner check at Titles' corner radius
-- [ ] `PERSONAL.md`'s "How this differs from upstream" table gains a row for this change
-- [ ] The build command from `ai/build.sh` succeeds and `ai/test.sh` passes
-- [ ] One commit on `personal` with an end-user changelog-style message that passes the commit hooks. It includes this ticket file with its Status set to `resolved`, so the working tree is clean for `./personal-build.sh`
+- [x] In the Titles style on macOS 26+, the panel uses Clear glass and has no shadow; with the private look unavailable, it uses Regular glass with a shadow, like App Icons
+- [x] Thumbnails still uses Regular glass with a shadow; App Icons is unchanged
+- [x] Comments next to both decisions say App Icons and Titles (not just App Icons), and the switcher panel background spec's summary and manual scenarios cover Titles with Clear glass, including the corner check at Titles' corner radius
+- [x] `PERSONAL.md`'s "How this differs from upstream" table gains a row for this change
+- [x] The build command from `ai/build.sh` succeeds and `ai/test.sh` passes
+- [x] One commit on `personal` with an end-user changelog-style message that passes the commit hooks. It includes this ticket file with its Status set to `resolved`, so the working tree is clean for `./personal-build.sh`
 - [ ] After `./personal-build.sh` installs the build, the owner checks ⌥Tab in Titles over a bright window and over a busy one: all four corners are clean in light and dark appearances, and the titles are readable (owner's visual sign-off)
+
+## Comments
+
+- Implemented in ec8afab2 (code, comments, spec, PERSONAL.md) and 263ce9cb (spec scenarios). The owner's corner and readability check led to tickets 02 and 03.
